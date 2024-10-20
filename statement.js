@@ -1,7 +1,7 @@
 function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
-  let result = `<h1>청구 내역 (고객명: ${invoice.customer})</h1>\n`;
+  let result = `<h1>청구 내역 (고객명: ${invoice.customer})</h1>`;
 
   const format = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -9,27 +9,23 @@ function statement(invoice, plays) {
     minimumFractionDigits: 2,
   }).format;
 
-  result += "<ul>\n";
+  result += "<ul>";
 
   invoice.performances.map((perf) => {
     const play = plays[perf.playID];
     const thisAmount = getAmount(play, perf);
-    // 포인트를 적립한다.
-    volumeCredits += Math.max(perf.audience - 30, 0);
-    // 희극 관객 5명마다 추가 포인트를 제공한다.
-    if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
-    // 사극 장르 20명 이상일 경우 추가 포인트 제공한다.
-    if (play.type === "history" && perf.audience > 20) volumeCredits += 10;
+    volumeCredits += getVolumeCredit(play, perf);
 
     // 청구 내역을 출력한다.
-    result += `<li>${play.name}: ${format(thisAmount / 100)} (${
-      perf.audience
-    }석)</li>\n`;
+    result += `
+    <li>
+    ${play.name}: ${format(thisAmount / 100)} (${perf.audience}석)
+    </li>`;
     totalAmount += thisAmount;
   });
 
-  result += "</ul>\n";
-  result += `<h2>총액: ${format(totalAmount / 100)}</h2>\n`;
+  result += "</ul>";
+  result += `<h2>총액: ${format(totalAmount / 100)}</h2>`;
   result += `<h2>적립 포인트: ${volumeCredits}점</h2>`;
   return result;
 }
@@ -58,6 +54,16 @@ function getAmount(play, perf) {
       throw new Error(`<li>알 수 없는 장르: ${play.type}</li>`);
   }
   return thisAmount;
+}
+
+function getVolumeCredit(play, perf) {
+  let thisVolumeCredits = Math.max(perf.audience - 30, 0);
+  // 희극 관객 5명마다 추가 포인트를 제공한다.
+  if ("comedy" === play.type)
+    thisVolumeCredits += Math.floor(perf.audience / 5);
+  // 사극 장르 20명 이상일 경우 추가 포인트 제공한다.
+  if (play.type === "history" && perf.audience > 20) thisVolumeCredits += 10;
+  return thisVolumeCredits;
 }
 
 export { statement };
