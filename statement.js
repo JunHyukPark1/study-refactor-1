@@ -58,11 +58,16 @@ function getAmount(play, perf) {
 
 function getVolumeCredit(play, perf) {
   let thisVolumeCredits = Math.max(perf.audience - 30, 0);
-  // 희극 관객 5명마다 추가 포인트를 제공한다.
-  if ("comedy" === play.type)
-    thisVolumeCredits += Math.floor(perf.audience / 5);
-  // 사극 장르 20명 이상일 경우 추가 포인트 제공한다.
-  if (play.type === "history" && perf.audience > 20) thisVolumeCredits += 10;
+
+  switch (play.type) {
+    case "comedy": // 희극 관객 5명마다 추가 포인트를 제공한다.
+      thisVolumeCredits += Math.floor(perf.audience / 5);
+      break;
+    case "history": // 사극 장르 20명 이상일 경우 추가 포인트 제공한다.
+      if (perf.audience > 20) thisVolumeCredits += 10;
+      break;
+  }
+
   return thisVolumeCredits;
 }
 
