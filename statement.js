@@ -24,9 +24,9 @@ function statement(invoice, plays) {
     totalAmount += thisAmount;
   });
 
-  result += "</ul>";
-  result += `<h2>총액: ${format(totalAmount / 100)}</h2>`;
-  result += `<h2>적립 포인트: ${volumeCredits}점</h2>`;
+  result += `</ul>
+             <h2>총액: ${format(totalAmount / 100)}</h2>
+             <h2>적립 포인트: ${volumeCredits}점</h2>`;
   return result;
 }
 
