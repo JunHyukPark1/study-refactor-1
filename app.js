@@ -1,7 +1,6 @@
-const fs = require("fs");
-const { statement } = require("./statement");
+import { statement } from "./statement.js";
 
-const plays = JSON.parse(fs.readFileSync("./plays.json"));
-const invoices = JSON.parse(fs.readFileSync("./invoices.json"));
+const plays = await fetch("./plays.json").then((res) => res.json());
+const invoices = await fetch("./invoices.json").then((res) => res.json());
 
-invoices.map((invoice) => console.log(statement(invoice, plays)));
+invoices.map((invoice) => document.write(statement(invoice, plays)));

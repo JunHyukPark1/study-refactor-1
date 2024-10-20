@@ -42,9 +42,9 @@ function statement(invoice, plays) {
     totalAmount += thisAmount;
   }
   result += "</ul>\n";
-  result += `<span>총액: ${format(totalAmount / 100)}</span>\n`;
-  result += `<span>적립 포인트: ${volumeCredits}점</span>`;
+  result += `<h2>총액: ${format(totalAmount / 100)}</h2>\n`;
+  result += `<h2>적립 포인트: ${volumeCredits}점</h2>`;
   return result;
 }
 
-module.exports = { statement };
+export { statement };
