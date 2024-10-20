@@ -13,8 +13,8 @@ function statement(invoice, plays) {
 
   invoice.performances.map((perf) => {
     const play = plays[perf.playID];
-    const thisAmount = getAmount(play, perf);
-    volumeCredits += getVolumeCredit(play, perf);
+    const { thisAmount, thisCredit } = getAmountCreditByType(play, perf);
+    volumeCredits += thisCredit;
 
     // 청구 내역을 출력한다.
     result += `
@@ -30,7 +30,8 @@ function statement(invoice, plays) {
   return result;
 }
 
-function getAmount(play, perf) {
+function getAmountCreditByType(play, perf) {
+  let thisCredit = Math.max(perf.audience - 30, 0);
   let thisAmount = 0;
 
   switch (play.type) {
@@ -46,29 +47,16 @@ function getAmount(play, perf) {
         thisAmount += 10000 + 500 * (perf.audience - 20);
       }
       thisAmount += 300 * perf.audience;
+      thisCredit += Math.floor(perf.audience / 5);
       break;
     case "history": //사극
       thisAmount = 10000 + 1500 * perf.audience;
+      if (perf.audience > 20) thisCredit += 10;
       break;
     default:
       throw new Error(`<li>알 수 없는 장르: ${play.type}</li>`);
   }
-  return thisAmount;
-}
-
-function getVolumeCredit(play, perf) {
-  let thisVolumeCredits = Math.max(perf.audience - 30, 0);
-
-  switch (play.type) {
-    case "comedy": // 희극 관객 5명마다 추가 포인트를 제공한다.
-      thisVolumeCredits += Math.floor(perf.audience / 5);
-      break;
-    case "history": // 사극 장르 20명 이상일 경우 추가 포인트 제공한다.
-      if (perf.audience > 20) thisVolumeCredits += 10;
-      break;
-  }
-
-  return thisVolumeCredits;
+  return { thisAmount, thisCredit };
 }
 
 export { statement };
