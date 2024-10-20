@@ -2,12 +2,15 @@ function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `<h1>청구 내역 (고객명: ${invoice.customer})</h1>\n`;
+
   const format = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
   }).format;
+
   result += "<ul>\n";
+
   for (let perf of invoice.performances) {
     const play = plays[perf.playID];
     let thisAmount = 0;
@@ -26,6 +29,9 @@ function statement(invoice, plays) {
         }
         thisAmount += 300 * perf.audience;
         break;
+      case "history":
+        thisAmount = 10000 + 1500 * perf.audience;
+        break;
       default:
         throw new Error(`<li>알 수 없는 장르: ${play.type}</li>`);
     }
@@ -34,6 +40,8 @@ function statement(invoice, plays) {
     volumeCredits += Math.max(perf.audience - 30, 0);
     // 희극 관객 5명마다 추가 포인트를 제공한다.
     if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
+    // 사극 장르 20명 이상일 경우 추가 포인트 제공한다.
+    if (play.type === "history" && perf.audience > 20) volumeCredits += 10;
 
     // 청구 내역을 출력한다.
     result += `<li>${play.name}: ${format(thisAmount / 100)} (${
